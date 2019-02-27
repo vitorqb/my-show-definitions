@@ -1,0 +1,62 @@
+* My Show Definitions
+
+  Suppose we have this file:
+
+#+BEGIN_SRC python
+class A:
+    def what_a_cool_method(self):
+        print("I am cool")
+
+    @staticmethod
+    def iam_static(something):
+        do_something()
+
+    class InnerClass:
+        def inner_classes_are_never_really_used(self):
+            print("Nothing")
+
+
+def do_something(args):
+    with args:
+        print("something")
+#+END_SRC
+
+   Call =M-x my-show-definitions= and you will have this in grep mode:
+
+#+BEGIN_EXAMPLE
+tmp2.py:1:A (class) - *class definition*
+tmp2.py:2:A (class) - what_a_cool_method (def)
+tmp2.py:6:A (class) - iam_static (def)
+tmp2.py:9:InnerClass (class) - *class definition*
+tmp2.py:10:InnerClass (class) - inner_classes_are_never_really_used (def)
+tmp2.py:14:do_something (def)
+#+END_EXAMPLE
+
+   Works for any language for which imenu works!
+   Like:
+
+#+BEGIN_SRC elisp
+(defvar my-var "one")
+(defvar my-other-var "one")
+
+(defun my-first-function ()
+  (do :something :here)
+  (do :something :else))
+
+(defun my-other-function (arg)
+  (do :something :even :cooler :with arg))
+#+END_SRC
+
+   =M-x my-show-definitions= and...
+
+#+BEGIN_SRC grep
+tmp.el:2:Variables - my-var
+tmp.el:3:Variables - my-other-var
+tmp.el:5:my-first-function
+tmp.el:9:my-other-function
+#+END_SRC
+
+** A Warning
+   I did it for myself because I always missed this functionality, I give you
+   absolutely no guarantees this will work correctly or that I'll ever touch
+   this code again.

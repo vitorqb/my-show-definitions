@@ -5,9 +5,9 @@
 ;; Author: Vitor <vitorqb@gmail.com>
 ;; Version: 0.0.1
 ;; Maintainer: Vitor <vitorqb@gmail.com>
-;; Created: 2018-10-28
+;; Created: 2019-02-27
 ;; Keywords: elisp
-;; Homepage: https://github.com/vitorqb/mylisputils/blob/development/mylisputils.el
+;; Homepage: https://github.com/vitorqb/my-show-definitions
 
 ;; This file is not part of GNU Emacs.
 
@@ -47,7 +47,6 @@
           (old-buff (current-buffer))
           (buff (generate-new-buffer "*MyShowDefinitions*")))
     (switch-to-buffer-other-window buff)
-    (insert "Matches\n")
     (seq-do
      (lambda (x)
        (insert (file-name-nondirectory (buffer-file-name old-buff)) ":")
