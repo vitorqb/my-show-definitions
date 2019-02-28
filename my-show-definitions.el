@@ -45,11 +45,17 @@
                                                             (and (numberp it)
                                                                  (< it 0)))))))
           (old-buff (current-buffer))
+          (row-prefix (-> old-buff
+                      buffer-file-name
+                      file-name-nondirectory
+                      (concat ":")
+                      (propertize 'invisible t)))
+          (old-buff-name )
           (buff (generate-new-buffer "*MyShowDefinitions*")))
     (switch-to-buffer-other-window buff)
     (seq-do
      (lambda (x)
-       (insert (file-name-nondirectory (buffer-file-name old-buff)) ":")
+       (insert row-prefix)
        (-let [(name . marker-or-pos) x]
          (insert (number-to-string
                   (if (markerp marker-or-pos)
