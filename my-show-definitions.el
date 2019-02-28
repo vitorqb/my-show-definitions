@@ -20,53 +20,43 @@
 (require 'dash-functional)
 
 (defun my-show-definitions-flatten-imenu-index-alist (orig-lst)
-  (cl-labels
-      ((flatten (acc prfx lst)
-                (if (equal nil lst)
-                    acc
-                  (-let* (((el     . rest)    lst)
-                          ((el-car . el-cdr)  el))
-                    (if (not (listp el-cdr))
-                        (flatten
-                         (cons (cons (concat prfx el-car) el-cdr) acc)
-                         prfx rest)
-                      (flatten
-                       (append (flatten '() (concat el-car " - ") el-cdr) acc)
-                       prfx
-                       rest))))))
+  (cl-labels ((flatten (acc prfx todo)
+                       (if (equal nil todo)
+                           acc
+                         (-let* (((el     . rest)    todo)
+                                 ((el-car . el-cdr)  el))
+                           (flatten
+                            (if (listp el-cdr)
+                                ;; el-cdr -> list, el-car -> Name
+                                (append (flatten '() (concat el-car " - ") el-cdr) acc)
+                              ;; el-cdr -> marker|number, el-car -> Name
+                              (cons (cons (concat prfx el-car) el-cdr) acc))
+                            prfx
+                            rest)))))
     (reverse (flatten '() "" orig-lst))))
 
 (defun my-show-definitions ()
   (interactive)
-  (-let* ((definitions-alist (->> (imenu--make-index-alist)
+  (-let* ((number-lt-0? (-andfn (-rpartial '< 0) 'numberp))
+          (definitions-alist (->> (imenu--make-index-alist)
                                   (my-show-definitions-flatten-imenu-index-alist)
-                                  (-remove (lambda (x) (--> x
-                                                            (cdr it)
-                                                            (and (numberp it)
-                                                                 (< it 0)))))))
+                                  (-remove (-compose number-lt-0? #'cdr))))
           (old-buff (current-buffer))
           (row-prefix (-> old-buff
                       buffer-file-name
                       file-name-nondirectory
                       (concat ":")
                       (propertize 'invisible t)))
-          (old-buff-name )
-          (buff (generate-new-buffer "*MyShowDefinitions*")))
-    (switch-to-buffer-other-window buff)
-    (seq-do
-     (lambda (x)
-       (insert row-prefix)
-       (-let [(name . marker-or-pos) x]
-         (insert (number-to-string
-                  (if (markerp marker-or-pos)
-                      (--> marker-or-pos
-                           (marker-position it)
-                           (with-current-buffer old-buff
-                             (line-number-at-pos it)))
-                    marker-or-pos)))
-         (insert ":" name)
-         (insert "\n")))
-     definitions-alist)
+          (get-marker-row (lambda (x) (with-current-buffer old-buff
+                                        (line-number-at-pos (marker-position x))))))
+    (switch-to-buffer-other-window (generate-new-buffer "*MyShowDefinitions*"))
+    (seq-do (lambda (x)
+              (-let* (((name . marker-or-pos) x)
+                      (row (if (markerp marker-or-pos)
+                               (funcall get-marker-row marker-or-pos)
+                             marker-or-pos)))
+                (insert row-prefix (number-to-string row) ":" name "\n")))
+            definitions-alist)
     (grep-mode)))
 
 (provide 'my-show-definitions)
