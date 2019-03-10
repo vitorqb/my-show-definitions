@@ -24,12 +24,12 @@ def do_something(args):
    Call =M-x my-show-definitions= and you will have this in grep mode:
 
 #+BEGIN_EXAMPLE
-tmp2.py:1:A (class) - *class definition*
-tmp2.py:2:A (class) - what_a_cool_method (def)
-tmp2.py:6:A (class) - iam_static (def)
-tmp2.py:9:InnerClass (class) - *class definition*
-tmp2.py:10:InnerClass (class) - inner_classes_are_never_really_used (def)
-tmp2.py:14:do_something (def)
+1:A (class) - *class definition*
+2:A (class) - what_a_cool_method (def)
+6:A (class) - iam_static (def)
+9:InnerClass (class) - *class definition*
+10:InnerClass (class) - inner_classes_are_never_really_used (def)
+14:do_something (def)
 #+END_EXAMPLE
 
    Works for any language for which imenu works!
@@ -50,10 +50,10 @@ tmp2.py:14:do_something (def)
    =M-x my-show-definitions= and...
 
 #+BEGIN_SRC grep
-tmp.el:2:Variables - my-var
-tmp.el:3:Variables - my-other-var
-tmp.el:5:my-first-function
-tmp.el:9:my-other-function
+2:Variables - my-var
+3:Variables - my-other-var
+5:my-first-function
+9:my-other-function
 #+END_SRC
 
 ** A Warning
