@@ -43,18 +43,16 @@
                                   (-remove (-compose number-lt-0? #'cdr))))
           (old-buff (current-buffer))
           (row-prefix (-> old-buff
-                      buffer-file-name
-                      file-name-nondirectory
-                      (concat ":")
-                      (propertize 'invisible t)))
-          (get-marker-row (lambda (x) (with-current-buffer old-buff
-                                        (line-number-at-pos (marker-position x))))))
+                          buffer-file-name
+                          file-name-nondirectory
+                          (concat ":")
+                          (propertize 'invisible t)))
+          (get-row (lambda (x) (with-current-buffer old-buff
+                                 (line-number-at-pos x)))))
     (switch-to-buffer-other-window (generate-new-buffer "*MyShowDefinitions*"))
     (seq-do (lambda (x)
-              (-let* (((name . marker-or-pos) x)
-                      (row (if (markerp marker-or-pos)
-                               (funcall get-marker-row marker-or-pos)
-                             marker-or-pos)))
+              (-let* (((name . marker-or-pos) x)                      
+                      (row (funcall get-row marker-or-pos)))
                 (insert row-prefix (number-to-string row) ":" name "\n")))
             definitions-alist)
     (grep-mode)))
